@@ -1,0 +1,16 @@
+resources:
+  apps:
+    alert_receiver:
+      name: alert-receiver
+      description: Receives Databricks job alert webhooks (OAuth) and shows them
+      source_code_path: ../src/app
+      config:
+        command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+        env:
+          # Only this identity may POST alerts. The Apps proxy sets X-Forwarded-Email to the caller's identity.
+          - name: ALLOWED_ALERT_CALLERS
+            value: ${var.caller_sp_application_id}
+      permissions:
+        # The webhook's service principal needs CAN_USE to get through the Apps front door.
+        - service_principal_name: ${var.caller_sp_application_id}
+          level: CAN_USE

@@ -1,0 +1,17 @@
+# A job that fails on purpose, wired to the OAuth webhook destination for start / success / failure.
+# Attach the same destination to your real jobs the same way (webhook_notifications), or in the job UI.
+resources:
+  jobs:
+    alert_demo_job:
+      name: alert-webhook-demo-job
+      tasks:
+        - task_key: fail_on_purpose
+          notebook_task:
+            notebook_path: ../src/demo/fail_on_purpose.py
+      webhook_notifications:
+        on_start:
+          - id: ${var.alert_destination_id}
+        on_success:
+          - id: ${var.alert_destination_id}
+        on_failure:
+          - id: ${var.alert_destination_id}

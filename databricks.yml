@@ -1,0 +1,25 @@
+# Databricks Asset Bundle: receive Databricks job alerts in a Databricks App via an OAuth webhook destination.
+# Works on AWS, Azure and GCP. See README.md for the full walkthrough.
+bundle:
+  name: alert-webhook-app
+
+include:
+  - resources/*.yml
+
+variables:
+  caller_sp_application_id:
+    description: Application (client) ID of the service principal the webhook authenticates as. Created by scripts/setup.py.
+  alert_destination_id:
+    description: ID of the OAuth webhook notification destination. Created by scripts/setup.py.
+    # Jobs require a UUID here. The all-zero UUID is a placeholder for the first deploy (alerts go nowhere until setup.py redeploys with the real ID).
+    default: 00000000-0000-0000-0000-000000000000
+
+targets:
+  dev:
+    mode: development
+    default: true
+    # Workspace comes from the CLI profile you pass with -p (or set workspace.host here).
+  prod:
+    mode: production
+    workspace:
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
